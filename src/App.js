@@ -92,7 +92,7 @@ function App() {
           onChange={handleRating}
           value={rating}
         ></input>
-        <Button variant="danger " onClick={getNewTeams}>
+        <Button variant="primary " onClick={getNewTeams}>
           Generate
         </Button>
       </ButtonContainer>
