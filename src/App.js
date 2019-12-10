@@ -4,6 +4,7 @@ import fetchTeams from "./logic/fetchTeams";
 import getCountry from "./logic/getCountry";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
 const TeamsContainer = styled.main`
   margin: 0 auto;
@@ -50,9 +51,9 @@ function App() {
   const [teams, setTeams] = React.useState();
   const [rating, setRating] = React.useState(5);
 
-  const getNewTeams = async () => {
+  const getNewTeams = async data => {
     setIsLoading(true);
-    const teams = await fetchTeams({ rating });
+    const teams = await fetchTeams(data);
     setIsLoading(false);
     setTeams(teams);
   };
@@ -62,15 +63,32 @@ function App() {
   };
 
   React.useEffect(() => {
-    getNewTeams();
+    getNewTeams({ rating });
   }, []);
+
+  const handleSubmit = event => {
+    event.preventDefault();
+
+    const data = {};
+
+    const formData = new FormData(event.target);
+
+    for (let entry of formData.entries()) {
+      const [name, value] = entry;
+      data[name] = value;
+    }
+
+    console.log({ data });
+
+    getNewTeams(data);
+  };
 
   return (
     <>
       {teams && !isLoading ? (
         <TeamsContainer color="blue">
           {teams.map(team => {
-            const { name, league, countryCode, rating, logoSrc } = team;
+            const { name, league, countryCode, rating, logoSrc } = team || {};
             return (
               <Team logoSrc={logoSrc}>
                 <div></div>
@@ -83,19 +101,32 @@ function App() {
           })}
         </TeamsContainer>
       ) : null}
-      <ButtonContainer>
-        <input
-          type="number"
-          id="userInput"
-          min={0}
-          max={5}
-          onChange={handleRating}
-          value={rating}
-        ></input>
-        <Button variant="primary " onClick={getNewTeams}>
-          Generate
-        </Button>
-      </ButtonContainer>
+      <Form onSubmit={handleSubmit}>
+        <ButtonContainer>
+          <select
+            type="number"
+            onChange={handleRating}
+            value={rating}
+            name="rating"
+          >
+            <option value="0.5">0.5</option>
+            <option value="1">1*</option>
+            <option value="1.5">1.5*</option>
+            <option value="2">2*</option>
+            <option value="2.5">2.5*</option>
+            <option value="3">3*</option>
+            <option value="3.5">3.5*</option>
+            <option value="4">4*</option>
+            <option value="4.5">4.5*</option>
+            <option value="5">5*</option>
+          </select>
+          <Form.Check name="international" label="International" />
+          <Form.Check name="derby" label="Derby" />
+          <Button variant="primary " type="submit">
+            Generate
+          </Button>
+        </ButtonContainer>
+      </Form>
     </>
   );
 }

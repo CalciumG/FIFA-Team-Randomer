@@ -252,7 +252,7 @@ const countryData = {
 };
 
 const getCountry = countryCode => {
-  return countryData[countryCode.toUpperCase()];
+  return countryData[(countryCode || "").toUpperCase()];
 };
 
 export default getCountry;
